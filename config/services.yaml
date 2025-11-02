@@ -16,13 +16,5 @@ services:
     App\:
         resource: '../src/'
 
-    App\Services\SummerHouseServiceCSV:
-        arguments:
-            $filepath: '%kernel.project_dir%/src/Services/SummerHouse.csv'
-    App\Services\BookingServiceCSV:
-        arguments:
-            $filepath: '%kernel.project_dir%/src/Services/Booking.csv'
-
-
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
