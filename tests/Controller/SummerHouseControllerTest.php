@@ -40,7 +40,7 @@ class SummerHouseControllerTest extends WebTestCase
         $this->entityManager->persist($house);
         $this->entityManager->flush();
 
-        $this->client->request('GET', '/house/'.$house->getId());
+        $this->client->request('GET', '/house/' . $house->getId());
 
         $this->assertResponseIsSuccessful();
         $this->assertJsonStringEqualsJsonString('"Test Street 1"', $this->client->getResponse()->getContent());

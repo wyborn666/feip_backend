@@ -1,0 +1,134 @@
+-include .env.local
+export
+
+DOCKER_COMPOSE = docker-compose --env-file .env.local
+PHP = $(DOCKER_COMPOSE) exec -T php
+
+.PHONY: rm-volumes
+rm-volumes:
+	$(DOCKER_COMPOSE) down -v
+	docker volume prune -a -f
+
+.PHONY: rm-images
+rm-images:
+	$(DOCKER_COMPOSE) down --rmi all
+	docker image prune -a -f
+
+.PHONY: rm-containers
+rm-containers:
+	docker container prune -f
+
+.PHONY: rm-networks
+rm-networks:
+	docker network prune -f
+
+.PHONY: rm-system
+rm-system: 
+	docker system prune --volumes -f
+
+.PHONY: rm-all
+rm-all: rm-volumes rm-images rm-containers rm-system rm-networks
+
+.PHONY: build
+build:
+	$(DOCKER_COMPOSE) build
+
+.PHONY: up
+up:
+	$(DOCKER_COMPOSE) up -d
+
+.PHONY: up-service
+up-service:
+	$(DOCKER_COMPOSE) up -d --no-deps --build $(SERVICE)
+
+.PHONY: up-logs
+up-logs:
+	$(DOCKER_COMPOSE) up
+
+.PHONY: up-logs-service
+up-logs-service:
+	$(DOCKER_COMPOSE) up --no-deps --build $(SERVICE)
+
+.PHONY: down
+down:
+	$(DOCKER_COMPOSE) down
+
+.PHONY: doctrine-create
+doctrine-create:
+	$(PHP) bin/console doctrine:database:create
+
+.PHONY: doctrine-diff
+doctrine-diff:
+	$(PHP) bin/console doctrine:migrations:diff
+
+.PHONY: doctrine-migrate
+doctrine-migrate:
+	$(PHP) bin/console doctrine:migrations:migrate
+
+.PHONY: doctrine-fixtures
+doctrine-fixtures:
+	$(PHP) bin/console --env=test doctrine:database:create
+
+.PHONY: doctrine-schema
+doctrine-schema:
+	$(PHP) bin/console --env=test doctrine:schema:create
+
+.PHONY: doctrine-drop
+doctrine-drop:
+	$(PHP) bin/console --env=test doctrine:database:drop --force
+
+.PHONY: doctrine-create-test
+doctrine-create-test:
+	$(PHP) bin/console doctrine:database:create --env=test
+
+.PHONY: doctrine-migrate-test
+doctrine-migrate-test:
+	$(PHP) bin/console doctrine:migrations:migrate -n --env=test
+
+.PHONY: doctrine-drop-test
+doctrine-drop-test:
+	$(PHP) bin/console doctrine:database:drop --force --env=test
+
+.PHONY: composer-install
+composer-install:
+	$(PHP) composer install
+
+.PHONY: psalm
+psalm:
+	$(PHP) ./vendor/bin/psalm
+
+.PHONY: psalm-clear-cache
+psalm-clear-cache:
+	$(PHP) ./vendor/bin/psalm --clear-cache
+
+.PHONY: test-all
+test-all:
+	$(PHP) ./vendor/bin/phpunit --bootstrap tests/bootstrap.php
+
+.PHONY: test-services
+test-services:
+	$(PHP) ./vendor/bin/phpunit --bootstrap tests/bootstrap.php tests/Service
+
+.PHONY: test-controllers
+test-controllers:
+	$(PHP) ./vendor/bin/phpunit --bootstrap tests/bootstrap.php tests/Controller
+
+.PHONY: phpcs
+phpcs:
+	$(PHP) ./vendor/bin/phpcs
+
+.PHONY: phpcbf
+phpcbf:
+	$(PHP) ./vendor/bin/phpcbf
+
+.PHONY: phpcs-file
+phpcs-file:
+	$(PHP) ./vendor/bin/phpcs $(FILE)
+
+.PHONY: phpcbf-file
+phpcbf-file:
+	$(PHP) ./vendor/bin/phpcbf $(FILE)
+
+.PHONY: php-cs-fixer
+php-cs-fixer:
+	$(PHP) ./vendor/bin/php-cs-fixer --allow-risky=yes fix

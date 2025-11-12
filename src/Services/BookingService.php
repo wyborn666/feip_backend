@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Dto\BookingDto;
@@ -6,13 +9,15 @@ use App\Entity\Booking;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\SummerHouseRepository;
-class BookingService {
+
+final class BookingService
+{
     public function __construct(private EntityManagerInterface $entityManager, private SummerHouseRepository $SummerHouseRepository, private UserRepository $userRepository)
     {
-        
     }
 
-    public function createBooking(BookingDto $dto) {
+    public function createBooking(BookingDto $dto)
+    {
         $house = $this->SummerHouseRepository->find($dto->houseId);
         $user = $this->userRepository->findOneBy(['phoneNumber' => $dto->phoneNumber]);
 
@@ -25,5 +30,4 @@ class BookingService {
         $this->entityManager->persist($booking);
         $this->entityManager->flush();
     }
-
 }

@@ -24,7 +24,7 @@ class UserControllerTest extends WebTestCase
         $this->userRepository = $container->get(UserRepository::class);
         $this->userService = $container->get(UserService::class);
         $this->entityManager = $container->get('doctrine.orm.entity_manager');
-        
+
         $users = $this->userRepository->findAll();
         foreach ($users as $user) {
             $this->entityManager->remove($user);

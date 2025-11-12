@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use App\Repository\SummerHouseRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SummerHouseRepository::class)]
-class SummerHouse
+final class SummerHouse
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -92,7 +94,7 @@ class SummerHouse
         return $this->hasShower;
     }
 
-    public function setHasShower(?bool $hasShower): static
+    public function setHasShower(bool $hasShower): static
     {
         $this->hasShower = $hasShower;
 

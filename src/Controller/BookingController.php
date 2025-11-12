@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
+
 use App\Dto\BookingDto;
 use App\Repository\BookingRepository;
 use App\Services\BookingService;
@@ -17,8 +20,8 @@ final class BookingController extends AbstractController
     {
         $booking = $this->Repository->find($id);
         if (!$booking) {
-        return new JsonResponse(['error' => 'Booking not found'], Response::HTTP_NOT_FOUND);
-    }
+            return new JsonResponse(['error' => 'Booking not found'], Response::HTTP_NOT_FOUND);
+        }
         return new JsonResponse([
             'id' => $booking->getId(),
             'houseId' => $booking->getHouse()?->getId(),
@@ -26,11 +29,12 @@ final class BookingController extends AbstractController
             'comment' => $booking->getComment(),
         ], Response::HTTP_OK);
     }
-    public function __construct(private BookingRepository $Repository,private BookingService $bookingService) {
-
+    public function __construct(private BookingRepository $Repository, private BookingService $bookingService)
+    {
     }
     #[Route('/booking', name: 'app_create_booking', methods:['POST'])]
-    public function createBooking(Request $request): Response {
+    public function createBooking(Request $request): Response
+    {
         $values = $request->toArray();
 
         if (empty($values['phoneNumber']) || empty($values['houseId'])) {
@@ -57,5 +61,4 @@ final class BookingController extends AbstractController
             Response::HTTP_CREATED
         );
     }
-
 }

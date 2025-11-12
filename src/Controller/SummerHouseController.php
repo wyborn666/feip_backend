@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Dto\SummerHouseDto;
@@ -22,19 +24,22 @@ final class SummerHouseController extends AbstractController
                 ['error' => "House not found"],
                 Response::HTTP_NOT_FOUND
             );
-    }
+        }
         return new JsonResponse($house->getAddress());
     }
-    public function __construct(private SummerHouseRepository $Repository, private SummerHouseService $houseService) {
-
+    public function __construct(private SummerHouseRepository $Repository, private SummerHouseService $houseService)
+    {
     }
     #[Route('/house', name: 'app_create_house', methods:['POST'])]
-    public function createHouse(Request $request): Response {
+    public function createHouse(Request $request): Response
+    {
         $values = $request->toArray();
 
-        if (empty($values['address']) || empty($values['price']) || 
-        empty($values['bedrooms']) || empty($values['distanceFromSea']) ||
-        empty($values['hasShower'])) {
+        if (
+            empty($values['address']) || empty($values['price']) ||
+            empty($values['bedrooms']) || empty($values['distanceFromSea']) ||
+            empty($values['hasShower'])
+        ) {
             return new JsonResponse(['error' => 'Missing data'], Response::HTTP_BAD_REQUEST);
         }
         $house = new SummerHouseDto(
@@ -45,11 +50,10 @@ final class SummerHouseController extends AbstractController
             $values["hasShower"],
         );
         try {
-        $this->houseService->createHouse($house);
+            $this->houseService->createHouse($house);
         } catch (\Exception $e) {
             return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_CONFLICT);
         }
         return new JsonResponse(200);
     }
-
 }

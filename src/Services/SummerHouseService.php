@@ -1,17 +1,21 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Services;
 
 use App\Dto\SummerHouseDto;
 use App\Entity\SummerHouse;
 use Doctrine\ORM\EntityManagerInterface;
 
-class SummerHouseService {
+final class SummerHouseService
+{
     public function __construct(private EntityManagerInterface $entityManager)
     {
-        
     }
 
-    public function createHouse(SummerHouseDto $dto) {
+    public function createHouse(SummerHouseDto $dto)
+    {
         $house = new SummerHouse();
         $house->setAddress($dto->address);
         $house->setPrice($dto->price);
@@ -23,5 +27,4 @@ class SummerHouseService {
         $this->entityManager->persist($house);
         $this->entityManager->flush();
     }
-
 }
