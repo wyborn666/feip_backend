@@ -28,11 +28,12 @@ class BookingServiceCSV {
         $file = fopen($this->filepath, "r");
         $booking = [];
         while (($row = fgetcsv($file)) !== false) {
+            [$id, $phoneNumber, $houseId, $comment] = $row;
             $booking[] = new Booking(
-                (int)$row[0],
-                $row[1],
-                (int)$row[2],
-                $row[3],
+                id: (int)$id,
+                phoneNumber: $phoneNumber,
+                houseId: (int)$houseId,
+                comment: $comment,
             );
         }
 

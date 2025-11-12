@@ -14,21 +14,19 @@ class SummerHouseServiceCSV {
         $file = fopen($this->filepath, "r");
 
         while (($row = fgetcsv($file)) !== false) {
+            [$id, $address, $price, $bedrooms, $distanceFromSea, $hasShower, $hasBathroom] = $row;
             $summerHouses[] = new SummerHouse(
-                (int)$row[0],
-                $row[1],
-                (int)$row[2],
-                (int)$row[3],
-                (int)$row[4],
-                (bool)$row[5],
-                (bool)$row[6]
+                id: (int)$id,
+                address: $address,
+                price: (int)$price,
+                bedrooms: (int)$bedrooms,
+                distanceFromSea: (int)$distanceFromSea,
+                hasShower: (bool)$hasShower,
+                hasBathroom: (bool)$hasBathroom
             );
         }
 
         fclose($file);
         return $summerHouses;
-
-
-
     }
 }

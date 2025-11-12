@@ -8,7 +8,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Attribute\Route;
+
+use function PHPUnit\Framework\throwException;
 
 final class BookingController extends AbstractController
 {
@@ -19,9 +22,10 @@ final class BookingController extends AbstractController
     public function index(Request $request): Response
 
     {
-        if (empty($request->toArray())) {
-            return new JsonResponse(["error" => "request body is empty"], 422);
+        if(!empty($request->toArray())) {
+            throw new HttpException(422, "Request body is empty");
         }
+        
         $values = $request->toArray();
         $booking = new Booking(
             id: $values["id"],
@@ -30,7 +34,8 @@ final class BookingController extends AbstractController
             comment: $values["comment"],
         );
         $this->bookingService->createBooking($booking);
-        return new JsonResponse(["status" =>"OK"], 201);
+
+        return new JsonResponse(["status" => "OK"], 201);
     }
 
     #[Route('api/booking', name:'app_booking_change_comment', methods: ['PATCH'])]
