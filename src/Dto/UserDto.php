@@ -7,6 +7,8 @@ class UserDto {
         public int $id,
         public string $username,
         public int $phonenumber,
+        public string $role,
+        public string $password,
     )
     {}
 }

@@ -39,6 +39,8 @@ final class UserController extends AbstractController
         $user = new CreateUserDto(
             $values["username"],
             $values["phoneNumber"],
+            $values["role"],
+            $values["password"]
         );
         try {
         $this->userService->createUser($user);
