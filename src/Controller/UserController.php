@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class UserController extends AbstractController
 {
@@ -30,10 +31,10 @@ final class UserController extends AbstractController
 
     }
     #[Route('/user', name: 'app_create_user', methods:['POST'])]
-    public function createUser(Request $request): Response {
+    public function createUser(Request $request, UserPasswordHasherInterface $passwordHasher): Response {
         $values = $request->toArray();
 
-        if (empty($values['username']) || empty($values['phoneNumber'])) {
+        if (empty($values['username']) || empty($values['phoneNumber']) || empty($values['role']) || empty($values['password'])) {
         return new JsonResponse(['error' => 'Missing data'], Response::HTTP_BAD_REQUEST);
     }
         $user = new CreateUserDto(
@@ -43,7 +44,7 @@ final class UserController extends AbstractController
             $values["password"]
         );
         try {
-        $this->userService->createUser($user);
+        $this->userService->createUser($user, $passwordHasher);
     } catch (\Exception $e) {
         return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_CONFLICT);
     }

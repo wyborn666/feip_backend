@@ -11,15 +11,45 @@ class BookingControllerTest extends WebTestCase
 {
     private $client;
     private $entityManager;
+    private User $testUser;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
         $this->entityManager = static::getContainer()->get('doctrine')->getManager();
 
+        // очищаем таблицы
         $this->entityManager->createQuery('DELETE FROM App\Entity\Booking')->execute();
         $this->entityManager->createQuery('DELETE FROM App\Entity\User')->execute();
         $this->entityManager->createQuery('DELETE FROM App\Entity\SummerHouse')->execute();
+
+        // создаём тестового пользователя
+        $this->testUser = new User();
+        $this->testUser->setUsername('testuser');
+        $this->testUser->setPhoneNumber('+79991234567');
+        $this->testUser->setRole('ROLE_USER');
+        $this->testUser->setPassword(password_hash('test123', PASSWORD_BCRYPT));
+
+        $this->entityManager->persist($this->testUser);
+        $this->entityManager->flush();
+
+        // логиним пользователя
+        $this->client->loginUser($this->testUser);
+    }
+
+    private function createTestHouse(): SummerHouse
+    {
+        $house = new SummerHouse();
+        $house->setAddress('Test Street');
+        $house->setPrice(1000);
+        $house->setBedrooms(2);
+        $house->setDistanceFromSea(500);
+        $house->setHasShower(true);
+
+        $this->entityManager->persist($house);
+        $this->entityManager->flush();
+
+        return $house;
     }
 
     public function testGetBookingNotFound(): void
@@ -34,23 +64,10 @@ class BookingControllerTest extends WebTestCase
 
     public function testCreateBookingSuccessfully(): void
     {
-        $user = new User();
-        $user->setUsername('testuser');
-        $user->setPhoneNumber('+79991234567');
-        $this->entityManager->persist($user);
-
-        $house = new SummerHouse();
-        $house->setAddress('Test Street');
-        $house->setPrice(1000);
-        $house->setBedrooms(2);
-        $house->setDistanceFromSea(500);
-        $house->setHasShower(true);
-        $this->entityManager->persist($house);
-
-        $this->entityManager->flush();
+        $house = $this->createTestHouse();
 
         $bookingData = [
-            'phoneNumber' => '+79991234567',
+            'phoneNumber' => $this->testUser->getPhoneNumber(),
             'houseId' => $house->getId(),
             'comment' => 'Test booking'
         ];
@@ -71,7 +88,7 @@ class BookingControllerTest extends WebTestCase
             ->findOneBy(['comment' => 'Test booking']);
 
         $this->assertNotNull($booking);
-        $this->assertEquals($user->getId(), $booking->getClient()->getId());
+        $this->assertEquals($this->testUser->getId(), $booking->getClient()->getId());
         $this->assertEquals($house->getId(), $booking->getHouse()->getId());
     }
 

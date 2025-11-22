@@ -6,10 +6,12 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-class User
+class User implements PasswordAuthenticatedUserInterface, UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -29,10 +31,10 @@ class User
     private Collection $bookings;
 
     #[ORM\Column(length: 100)]
-    private ?string $role = null;
+    private string $role = 'ROLE_USER';
 
     #[ORM\Column(length: 255)]
-    private ?string $password = null;
+    private string $password;
 
     public function __construct()
     {
@@ -102,6 +104,16 @@ class User
         return $this->role;
     }
 
+    public function eraseCredentials(): void
+    {
+        return; 
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->phoneNumber;
+    }
+
     public function setRole(string $role): static
     {
         $this->role = $role;
@@ -120,4 +132,13 @@ class User
 
         return $this;
     }
+        public function getRoles(): array
+    {
+        $roles = [];
+        $roles[] = $this->role;
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
 }
