@@ -8,20 +8,38 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\Post;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[ApiResource(
+    operations: [
+        new GetCollection(normalizationContext: ['groups' => ['user:read']]),
+        new Get(normalizationContext: ['groups' => ['user:read']]),
+        new Post(
+            normalizationContext: ['groups' => ['user:read']],
+            denormalizationContext: ['groups' => ['user:write']]
+        ),
+    ]
+)]
 class User implements PasswordAuthenticatedUserInterface, UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $username = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $phoneNumber = null;
 
     /**
@@ -34,6 +52,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     private string $role = 'ROLE_USER';
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:write'])]
     private string $password;
 
     public function __construct()

@@ -4,6 +4,21 @@ namespace App\Entity;
 
 use App\Repository\SummerHouseRepository;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Metadata\Post;
+#[ApiResource(
+    operations: [
+        new GetCollection(normalizationContext: ['groups' => ['summerhouse:read']]),
+        new Get(normalizationContext: ['groups' => ['summerhouse:read']]),
+        new Post(
+            normalizationContext: ['groups' => ['summerhouse:read']],
+            denormalizationContext: ['groups' => ['summerhouse:write']]
+        ),
+    ]
+)]
 
 #[ORM\Entity(repositoryClass: SummerHouseRepository::class)]
 class SummerHouse
@@ -11,21 +26,27 @@ class SummerHouse
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['summerhouse:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['summerhouse:read', 'summerhouse:write'])]
     private ?string $address = null;
 
     #[ORM\Column]
+    #[Groups(['summerhouse:read', 'summerhouse:write'])]
     private ?int $price = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['summerhouse:read', 'summerhouse:write'])]
     private ?int $bedrooms = null;
 
     #[ORM\Column]
+    #[Groups(['summerhouse:read', 'summerhouse:write'])]
     private ?int $distanceFromSea = null;
 
     #[ORM\Column]
+    #[Groups(['summerhouse:read', 'summerhouse:write'])]
     private bool $hasShower = false;
 
     public function getId(): ?int
