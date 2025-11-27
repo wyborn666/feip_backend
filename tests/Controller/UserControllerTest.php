@@ -2,7 +2,6 @@
 
 namespace App\Tests\Controller;
 
-use App\Dto\CreateUserDto;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Services\UserService;
@@ -24,7 +23,7 @@ class UserControllerTest extends WebTestCase
         $this->userRepository = $container->get(UserRepository::class);
         $this->userService = $container->get(UserService::class);
         $this->entityManager = $container->get('doctrine.orm.entity_manager');
-        
+
         $users = $this->userRepository->findAll();
         foreach ($users as $user) {
             $this->entityManager->remove($user);
@@ -32,17 +31,27 @@ class UserControllerTest extends WebTestCase
         $this->entityManager->flush();
     }
 
-    public function testGetUser(): void
+    private function createAndLoginUser(string $username = 'testuser', string $phone = '+79991234567'): User
     {
         $user = new User();
-        $user->setUsername('testuser');
-        $user->setPhoneNumber('+79991234567');
+        $user->setUsername($username);
+        $user->setPhoneNumber($phone);
+        $user->setRole('ROLE_USER');
+        $user->setPassword(password_hash('test123', PASSWORD_BCRYPT));
 
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
-        $userId = $user->getId();
+        $this->client->loginUser($user);
 
+        return $user;
+    }
+
+    public function testGetUser(): void
+    {
+        $user = $this->createAndLoginUser();
+
+        $userId = $user->getId();
         $this->client->request('GET', "/user/{$userId}");
 
         $this->assertResponseIsSuccessful();
@@ -53,15 +62,19 @@ class UserControllerTest extends WebTestCase
 
     public function testGetUserNotFound(): void
     {
+        $this->createAndLoginUser();
         $this->client->request('GET', '/user/999999');
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
 
     public function testCreateUser(): void
     {
+        $this->createAndLoginUser();
         $userData = [
             'username' => 'newuser',
-            'phoneNumber' => '+79998887766'
+            'phoneNumber' => '+79998887766',
+            'password' => 'test123',
+            'role' => 'ROLE_USER'
         ];
 
         $this->client->request(
@@ -82,6 +95,7 @@ class UserControllerTest extends WebTestCase
 
     public function testCreateUserWithInvalidData(): void
     {
+        $this->createAndLoginUser();
         $invalidData = ['username' => 'incompleteuser'];
 
         $this->client->request(
@@ -98,9 +112,12 @@ class UserControllerTest extends WebTestCase
 
     public function testCreateUserWithDuplicateUsername(): void
     {
+        $this->createAndLoginUser();
         $userData = [
             'username' => 'duplicateuser',
-            'phoneNumber' => '+79991112233'
+            'phoneNumber' => '+79991112233',
+            'password' => 'test123',
+            'role' => 'ROLE_USER'
         ];
 
         $this->client->request(

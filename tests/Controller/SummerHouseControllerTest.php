@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Entity\SummerHouse;
+use App\Entity\User;
 use App\Repository\SummerHouseRepository;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -28,8 +29,26 @@ class SummerHouseControllerTest extends WebTestCase
         $this->entityManager->flush();
     }
 
+    private function createAndLoginUser(): User
+    {
+        $user = new User();
+        $user->setUsername('testuser');
+        $user->setPhoneNumber('+79991234567');
+        $user->setRole('ROLE_USER');
+        $user->setPassword(password_hash('test123', PASSWORD_BCRYPT));
+
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        $this->client->loginUser($user);
+
+        return $user;
+    }
+
     public function testGetHouseReturnsAddress(): void
     {
+        $this->createAndLoginUser();
+
         $house = new SummerHouse();
         $house->setAddress('Test Street 1');
         $house->setPrice(100);
@@ -48,6 +67,8 @@ class SummerHouseControllerTest extends WebTestCase
 
     public function testGetHouseNotFound(): void
     {
+        $this->createAndLoginUser();
+
         $this->client->request('GET', '/house/999999');
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
         $this->assertJson($this->client->getResponse()->getContent());
@@ -55,6 +76,8 @@ class SummerHouseControllerTest extends WebTestCase
 
     public function testCreateHouseSuccessfully(): void
     {
+        $this->createAndLoginUser();
+
         $houseData = [
             'address' => 'Beach House',
             'price' => 250,
@@ -81,6 +104,8 @@ class SummerHouseControllerTest extends WebTestCase
 
     public function testCreateHouseMissingData(): void
     {
+        $this->createAndLoginUser();
+
         $invalidData = [
             'address' => 'Incomplete House',
             'price' => 150
