@@ -17,7 +17,7 @@ jobs:
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_db
+          POSTGRES_DB: app
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -45,8 +45,14 @@ jobs:
 
       - name: Create database
         run: |
+          until pg_isready -h localhost -p 5432 -U postgres; do
+            echo "Waiting for database..."
+            sleep 1
+          done
           php bin/console doctrine:database:create --env=test --if-not-exists
           php bin/console doctrine:schema:create --env=test
+        env:
+          DATABASE_URL: "pgsql://postgres:postgres@localhost:5432/app?serverVersion=13&charset=utf8"
 
       - name: Run PHPUnit tests
         run: ./vendor/bin/phpunit --coverage-text
