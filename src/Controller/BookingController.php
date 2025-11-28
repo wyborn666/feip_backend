@@ -42,7 +42,7 @@ final class BookingController extends AbstractController
     public function changeBookingComment(Request $request): Response
     {
         if (empty($request->toArray())) {
-            return new JsonResponse(["error" => "request body is empty"], 422);
+            throw new HttpException(422, "error request body is empty");
         }
         $values = $request->toArray();
         $this->bookingService->changeBookingComment($values["id"], $values["comment"]);
