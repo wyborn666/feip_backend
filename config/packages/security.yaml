@@ -10,6 +10,17 @@ security:
                 property: phoneNumber
     
     firewalls:
+
+        admin:
+            pattern: ^/admin
+            provider: app_user_provider
+            form_login:
+                login_path: admin_login
+                check_path: admin_login
+                default_target_path: admin
+            logout:
+                path: admin_logout
+                target: admin_login
         
         main:
             lazy: true
@@ -24,6 +35,8 @@ security:
     access_control:
         - { path: ^/_wdt, roles: PUBLIC_ACCESS }
         - { path: ^/_profiler, roles: PUBLIC_ACCESS }
-        - { path: ^/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/user$, roles: PUBLIC_ACCESS }
+        - { path: ^/admin/login$, roles: PUBLIC_ACCESS }
+        - { path: ^/admin$, roles: ROLE_ADMIN }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
