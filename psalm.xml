@@ -24,4 +24,14 @@
             <directory name="public" />
         </ignoreFiles>
     </projectFiles>
+
+    <issueHandlers>
+        <PropertyNotSetInConstructor errorLevel="suppress" />
+        <UnusedClass errorLevel="suppress" />
+
+        <PossiblyUnusedMethod errorLevel="suppress" />
+        <UnusedParam errorLevel="suppress" />
+
+        <MissingReturnType errorLevel="suppress" />
+    </issueHandlers>
 </psalm>

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Dto;
 
-class SummerHouseDto
+final class SummerHouseDto
 {
     public function __construct(
         public string $address,

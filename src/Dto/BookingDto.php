@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Dto;
 
-class BookingDto
+final class BookingDto
 {
     public function __construct(
         public string $phoneNumber,

@@ -14,7 +14,7 @@ final class UserService
     {
     }
 
-    public function createUser(CreateUserDto $dto)
+    public function createUser(CreateUserDto $dto): void
     {
         $existingUser = $this->entityManager
             ->getRepository(User::class)

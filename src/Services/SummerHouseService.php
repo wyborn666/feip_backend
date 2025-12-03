@@ -14,7 +14,7 @@ final class SummerHouseService
     {
     }
 
-    public function createHouse(SummerHouseDto $dto)
+    public function createHouse(SummerHouseDto $dto): void
     {
         $house = new SummerHouse();
         $house->setAddress($dto->address);
