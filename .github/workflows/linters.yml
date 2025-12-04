@@ -1,0 +1,100 @@
+name: Code Quality
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  phpcs:
+    name: PHP Code Sniffer
+    runs-on: ubuntu-latest
+
+    env:
+      MESSENGER_TRANSPORT_DSN: "doctrine://default?auto_setup=0"
+      DEFAULT_URI: "http://localhost"
+      APP_ENV: test
+      DATABASE_URL: "postgresql://app:123456789Q@localhost:5432/app_4?serverVersion=16&charset=utf8"
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: 123456789Q
+          POSTGRES_DB: app_4
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Create database
+        run: |
+          php bin/console doctrine:database:create --env=test --if-not-exists
+          php bin/console doctrine:schema:create --env=test
+
+      - name: Run PHP Code Sniffer
+        run: ./vendor/bin/phpcs --standard=PSR12 src/ tests/
+
+  psalm:
+    name: Psalm Static Analysis
+    runs-on: ubuntu-latest
+
+    env:
+      MESSENGER_TRANSPORT_DSN: "doctrine://default?auto_setup=0"
+      DEFAULT_URI: "http://localhost"
+      APP_ENV: test
+      DATABASE_URL: "postgresql://app:123456789Q@localhost:5432/app_4?serverVersion=16&charset=utf8"
+    
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: 123456789Q
+          POSTGRES_DB: app_4
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Create database
+        run: |
+          php bin/console doctrine:database:create --env=test --if-not-exists
+          php bin/console doctrine:schema:create --env=test
+
+      - name: Run Psalm
+        run: ./vendor/bin/psalm --output-format=github --shepherd --no-progress
