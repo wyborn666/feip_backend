@@ -10,14 +10,19 @@ jobs:
   tests:
     name: PHP Unit Tests
     runs-on: ubuntu-latest
+    env:
+      MESSENGER_TRANSPORT_DSN: "doctrine://default?auto_setup=0"
+      DEFAULT_URI: "http://localhost"
+      APP_ENV: test
+      DATABASE_URL: "postgresql://app:123456789Q@localhost:5432/app_4?serverVersion=16&charset=utf8"
     
     services:
       postgres:
-        image: postgres:13
+        image: postgres:16
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: app
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: 123456789Q
+          POSTGRES_DB: app_4
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -45,14 +50,8 @@ jobs:
 
       - name: Create database
         run: |
-          until pg_isready -h localhost -p 5432 -U postgres; do
-            echo "Waiting for database..."
-            sleep 1
-          done
           php bin/console doctrine:database:create --env=test --if-not-exists
           php bin/console doctrine:schema:create --env=test
-        env:
-          DATABASE_URL: "pgsql://postgres:postgres@localhost:5432/app?serverVersion=13&charset=utf8"
 
       - name: Run PHPUnit tests
-        run: ./vendor/bin/phpunit --coverage-text
+        run: php bin/phpunit

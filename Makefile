@@ -95,7 +95,7 @@ composer-install:
 
 .PHONY: psalm
 psalm:
-	$(PHP) ./vendor/bin/psalm
+	$(PHP) vendor/bin/psalm
 
 .PHONY: psalm-clear-cache
 psalm-clear-cache:

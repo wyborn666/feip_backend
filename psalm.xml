@@ -33,5 +33,6 @@
         <UnusedParam errorLevel="suppress" />
 
         <MissingReturnType errorLevel="suppress" />
+        <ClassMustBeFinal errorLevel="suppress"/>
     </issueHandlers>
 </psalm>
