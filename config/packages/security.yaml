@@ -22,8 +22,6 @@ security:
                 path: app_logout
 
     access_control:
-        - { path: ^/_wdt, roles: PUBLIC_ACCESS }
-        - { path: ^/_profiler, roles: PUBLIC_ACCESS }
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/user$, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
