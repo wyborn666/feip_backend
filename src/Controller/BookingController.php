@@ -12,6 +12,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class BookingController extends AbstractController
 {
+    public function __construct(private BookingRepository $Repository,private BookingService $bookingService) {
+    }
     #[Route('/booking/{id}', name: 'app_booking', methods: ['GET'])]
     public function index(int $id): Response
     {
@@ -25,9 +27,6 @@ final class BookingController extends AbstractController
             'phoneNumber' => $booking->getClient()?->getPhoneNumber(),
             'comment' => $booking->getComment(),
         ], Response::HTTP_OK);
-    }
-    public function __construct(private BookingRepository $Repository,private BookingService $bookingService) {
-
     }
     #[Route('/booking', name: 'app_create_booking', methods:['POST'])]
     public function createBooking(Request $request): Response {
