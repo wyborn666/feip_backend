@@ -11,11 +11,11 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\Post;
 #[ApiResource(
     operations: [
-        new GetCollection(normalizationContext: ['groups' => ['summerhouse:read']]),
-        new Get(normalizationContext: ['groups' => ['summerhouse:read']]),
+        new Get(
+            routeName: 'app_house'
+        ),
         new Post(
-            normalizationContext: ['groups' => ['summerhouse:read']],
-            denormalizationContext: ['groups' => ['summerhouse:write']]
+            routeName: 'app_create_house'
         ),
     ]
 )]

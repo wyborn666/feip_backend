@@ -18,11 +18,11 @@ use ApiPlatform\Metadata\Post;
 #[ORM\Table(name: '`user`')]
 #[ApiResource(
     operations: [
-        new GetCollection(normalizationContext: ['groups' => ['user:read']]),
-        new Get(normalizationContext: ['groups' => ['user:read']]),
+        new Get(
+            routeName: 'app_user'
+        ),
         new Post(
-            normalizationContext: ['groups' => ['user:read']],
-            denormalizationContext: ['groups' => ['user:write']]
+            routeName: 'app_create_user'
         ),
     ]
 )]

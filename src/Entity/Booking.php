@@ -7,19 +7,20 @@ use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
-use Symfony\Component\Serializer\Annotation\Groups;
 use ApiPlatform\Metadata\Post;
+use Symfony\Component\Serializer\Annotation\Groups;
+use App\Controller\BookingController;
+
 #[ApiResource(
     operations: [
-        new GetCollection(normalizationContext: ['groups' => ['booking:read']]),
-        new Get(normalizationContext: ['groups' => ['booking:read']]),
+        new Get(
+            routeName: 'app_booking'
+        ),
         new Post(
-            normalizationContext: ['groups' => ['booking:read']],
-            denormalizationContext: ['groups' => ['booking:write']]
+            routeName: 'app_create_booking'
         ),
     ]
 )]
-
 #[ORM\Entity(repositoryClass: BookingRepository::class)]
 class Booking
 {
@@ -51,7 +52,6 @@ class Booking
     public function setId(int $id): static
     {
         $this->id = $id;
-
         return $this;
     }
 
@@ -63,7 +63,6 @@ class Booking
     public function setClient(?User $client): static
     {
         $this->client = $client;
-
         return $this;
     }
 
@@ -75,7 +74,6 @@ class Booking
     public function setHouse(SummerHouse $house): static
     {
         $this->house = $house;
-
         return $this;
     }
 
@@ -87,7 +85,6 @@ class Booking
     public function setComment(?string $comment): static
     {
         $this->comment = $comment;
-
         return $this;
     }
 }
