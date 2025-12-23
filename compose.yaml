@@ -2,7 +2,7 @@ services:
   php:
     container_name: php-container
     build:
-        context: .docker/php
+        context: ./docker/php
     ports:
         - "9000:9000"
     volumes:
@@ -30,6 +30,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_USER: ${POSTGRES_USER}
+    ports:
+      - "5432:5432"
     healthcheck:
       test: ["CMD", "pg_isready", "-d", "${POSTGRES_DB}", "-U", "${POSTGRES_USER}"]
       timeout: 5s
@@ -39,9 +41,4 @@ services:
       - database_data:/var/lib/postgresql/data:rw
 
 volumes:
-###> doctrine/doctrine-bundle ###
   database_data:
-###< doctrine/doctrine-bundle ###
-
-networks:
-  nginx-php-database:

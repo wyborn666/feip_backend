@@ -1,0 +1,14 @@
+<?php
+
+namespace App\Dto;
+
+class UserDto {
+    public function __construct(
+        public int $id,
+        public string $username,
+        public int $phonenumber,
+        public string $role,
+        public string $password,
+    )
+    {}
+}
